@@ -1,0 +1,4 @@
+install.packages('Rfacebook')
+library(Rfacebook)
+
+fb_ouath=fbOAuth(app_id = '1755276658020674',app_secret='d8fd9917eba86b37bb191904f56d213b',extended_permissions=FALSE)
