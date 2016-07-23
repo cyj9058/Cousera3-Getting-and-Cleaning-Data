@@ -1,4 +1,8 @@
 install.packages('Rfacebook')
 library(Rfacebook)
 
-fb_ouath=fbOAuth(app_id = '1755276658020674',app_secret='d8fd9917eba86b37bb191904f56d213b',extended_permissions=FALSE)
+fb_oauth=fbOAuth(app_id = '1755276658020674',app_secret='d8fd9917eba86b37bb191904f56d213b',extended_permissions=FALSE)
+getUsers("me",token=fb_ouath)
+
+fb_page_data_hk<- getPage(page="hkilbo", token=fb_oauth, n=50)
+fb_post<- getPost(post="https://www.facebook.com/youngji.cho1/posts/1033203036769714?pnref=story", token=fb_ouath, n = 500)
