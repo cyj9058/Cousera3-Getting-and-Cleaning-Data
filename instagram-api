@@ -1,0 +1,10 @@
+library(httr)
+library(httpuv)
+library(jsonlite)
+library(dplyr)
+
+instagram<-oauth_endpoint(authorize = "https://api.instagram.com/oauth/authorize/?client_id=CLIENT-ID&redirect_uri=REDIRECT-URI&response_type=code", access = "https://api.instagram.com/oauth/access_token")
+myapp <- oauth_app(appname="test", key = "70c221469299498b9b491b3a5064563c", secret="167a6cad39964735b7afcf1d413813b4")
+ig_oauth <- oauth2.0_token(instagram, myapp,scope="basic",  type = "application/x-www-form-urlencoded",cache=FALSE)
+
+ 
