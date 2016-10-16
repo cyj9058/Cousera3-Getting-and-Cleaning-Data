@@ -1,0 +1,20 @@
+#Simulation & Data inference
+##### Coursera Statistical inference week-4 assignment 
+##### Name: Youngji-Cho/ "https://github.com/youngji-cho"
+
+### 1.Simulating Central Limit Theoram(CLT)
+
+```{r, echo=TRUE}
+plot(rexp(n=100000, 1))
+
+x<-vector(mode="numeric",length = 400)
+for(i in 1:400){
+  x[i]<-mean(rexp(n=i,0.2))
+}
+plot(x,type = "l")
+```
+
+### 2.Simulating Central Limit Theoram(CLT)
+```{r, echo=TRUE}
+data("ToothGrowth")
+```
