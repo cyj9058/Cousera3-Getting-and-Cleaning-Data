@@ -3,13 +3,41 @@ os.chdir("/Users/joyeongji/Dropbox/data")
 
 import openpyxl as xl
 import numpy as np
-risk=xl.load_workbook("power-plant-risk-analysis.xlsx",read_only=True)
+import pandas as pd 
+import scipy as sp 
+
+solar_risk=pd.read_excel("power-plant-risk-analysis.xlsx",sheetname='risk-evaluation')
+solar_risk['type']
+
+capa=99
+year=20
+smp=100
+rec=100
+runtime=3.3
+efficiency=1
+
+def revenue(capa,year,smp,rec,runtime,efficiency):
+    time=1
+    revenue_stream=pd.Series(list(range(1,year*12+1)))   
+    while time<=year*12:
+        revenue_stream[time]=capa*(smp+rec)*runtime*efficiency
 
 
-risk.sheetnames()
-risk.sheet=risk.get_sheet_by_name("시트2")
 
-risk.sheet.iter_rows()
-use_col = 0  # column index from each row to get value of
-x2 = np.array([r[use_col].value for r in riks.sheet.iter_rows()]
- 
+revenue_stream=pd.Series([1,5])
+
+
+
+def random_risk_generate(risk_type, ):
+    if(risk_type=='normal' )
+
+    
+s1 = pd.Series([1, 2, 3])
+s2 = pd.Series([4, 5, 6])
+s3 = pd.Series([4, 5, 6], index=[3,4,5])
+s1.append(s2)
+
+revenue_stream=pd.Series(list(range(1,241)))    
+    
+    
+    sp.stats.binom(N, theta)
