@@ -30,14 +30,13 @@ revenue_risk=solar_risk[solar_risk['factor']=='revenue']
 def random_generate(risk,size):
     random_data=pd.DataFrame()
     col=0
-    N=50
     while  col< risk.shape[0]: 
         if risk[col:col+1]['distribution']=='normal':
-            random_data[col:col+1]=pd.Series(st.norm.rvs(risk[col:col+1]['mean'],
-            risk[col:col+1]['variance'],size))
+            val1=st.norm.rvs(risk[col:col+1]['mean'],risk[col:col+1]['variance'],size)
+            random_data[col:col+1]=pd.Series(val1)
         elif risk[col:col+1]['distribution']=='dicrete':
-            random_data[col:col+1]=pd.Series(st.binom.rvs(100,risk[col:col+1]['probability'],size)/100)
-        
-        
-        
+            val2=st.binom.rvs(100,risk[col:col+1]['probability'],size)/100
+            random_data[col:col+1]=pd.Series(val2)  
         col=+1
+    return(random_data)
+    
