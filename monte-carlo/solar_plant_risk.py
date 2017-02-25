@@ -7,13 +7,6 @@ import scipy.stats as st
 
 solar_risk=pd.read_excel("power-plant-risk-analysis.xlsx",sheetname='risk-evaluation')
 
-#capa=99
-#year=20
-#smp=100
-#rec=100
-#runtime=3.3
-#efficiency=1
-
 def revenue(capa,year,smp,rec,runtime,efficiency):
     time=1
     revenue_stream=pd.Series(list(range(1,year*12+1)))   
