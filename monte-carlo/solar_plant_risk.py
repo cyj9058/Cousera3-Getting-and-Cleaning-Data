@@ -27,19 +27,18 @@ schedule_risk=solar_risk[solar_risk['factor']=='schedule']
 capex_risk=solar_risk[solar_risk['factor']=='capex']
 revenue_risk=solar_risk[solar_risk['factor']=='revenue']
 
-risk=revenue_risk   
-
+risk=revenue_risk
+size=100
+  
 def random_generate(risk,size):
-    index=list(range(0,risk.shape[0]))
-    random_data=pd.DataFrame(index=index)
     col=0
+    random_data=pd.DataFrame(columns=list(risk['risk']))
     while  col< risk.shape[0]: 
         if risk.iloc[col]['distribution']=='normal':
             val1=st.norm.rvs(risk[col:col+1]['mean'],risk[col:col+1]['variance'],size)
-            random_data.loc[col]=pd.Series(val1)
-        elif risk.iloc[col]['distribution']=='dicrete':
+            random_data[random_data.columns[col]]=val1
+        elif risk.iloc[col]['distribution']=='discrete':
             val2=st.binom.rvs(n=100,p=risk[col:col+1]['probability'],size=size)/100
-            random_data.loc[col]=pd.Series(val2)  
-        col=+1
+            random_data[random_data.columns[col]]=val2  
+        col+=1
     return(random_data)
-    
