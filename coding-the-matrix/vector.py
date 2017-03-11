@@ -64,3 +64,50 @@ def subtract2(x,y):
 def add2(x,y):
     return(x[0]+2*y[0],x[1]+2*y[1],x[2]+2*y[2])
 
+
+
+
+
+
+import numpy as np 
+import numpy.linalg as lin
+
+s=10
+v=[1,2,3]
+m=np.array([[1,2,3],[4,5,6]])
+
+type(s)
+type(v)
+type(m)
+
+#Vector 크기 계산 
+x=np.array([1,2])
+lin.norm(x)
+
+#Unit Vector 
+import math 
+import numpy as np 
+
+def add(u,v):
+    return[u[i]+v[i] for i in range(len(u))]
+           
+def magnitude(v):
+    return math.sqrt(sum(v[i]))
+           
+         
+l=[1,1,1]
+v=[0,0,0]
+
+#Vector Calculation 
+
+d=np.array([4,5])
+e=np.array([3,8])
+f=d+e
+
+l=np.array([1,1,1])
+v=np.array([2,2,2])
+l+v
+l-v
+l*v
+l/v
+l**v
