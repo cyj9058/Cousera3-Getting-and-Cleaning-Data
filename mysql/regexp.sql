@@ -20,5 +20,13 @@ select 'ㄱㄴㄷㄹ' regexp '[ㄱ-ㄹ]';
 select 'regular is' regexp '[^regular ]';
 select 'regular' regexp '[^regular ]';
 
-# '|'는  or의 의미이지만, 블랭크를 유의해서 작성해야 한다. 
+#page 10 '|'는  or의 의미이지만, 블랭크를 유의해서 작성해야 한다. 
 select ' "설비용량" ' regexp '"|ues|ri';
+
+#page 11*+?  는 해당 문자가 몇개나 있는지 찾는다.
+select ' "나는 에너지 에너지 에너지 산업에 종사하고 싶다." ' regexp '에?너';
+ 
+#page 12 
+ 
+ 
+
