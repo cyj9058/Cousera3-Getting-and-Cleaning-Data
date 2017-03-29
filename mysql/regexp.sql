@@ -1,8 +1,8 @@
-#page1 ,2 대소문자를 신경쓰고, 띄어쓰기도 신경 쓴다. 
+#page 1,2 대소문자를 신경쓰고, 띄어쓰기도 신경 쓴다. 
 select 'Hello, world!' regexp 'hello,';
 select 'Hello, world!' regexp 'hello, world';
 
-#page3 첫문자와 마지막 문자를 찾는다. 
+#page 3 첫문자와 마지막 문자를 찾는다. 
 select 'who is who' regexp '^who';
 select 'who is who'  regexp 'who$';
 
