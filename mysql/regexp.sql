@@ -1,4 +1,3 @@
-
 #page1 ,2 대소문자를 신경쓰고, 띄어쓰기도 신경 쓴다. 
 select 'Hello, world!' regexp 'hello,';
 select 'Hello, world!' regexp 'hello, world';
@@ -20,7 +19,6 @@ select '"How do you do"'  regexp '["]';
 select 'ㄱㄴㄷㄹ' regexp '[ㄱ-ㄹ]';
 select 'regular is' regexp '[^regular ]';
 select 'regular' regexp '[^regular ]';
-
 
 # '|'는  or의 의미이지만, 블랭크를 유의해서 작성해야 한다. 
 select ' "설비용량" ' regexp '"|ues|ri';
