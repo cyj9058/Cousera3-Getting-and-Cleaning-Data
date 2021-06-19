@@ -1,0 +1,142 @@
+---
+title: "PA1_Template"
+author: "Young Ji Cho"
+date: '2021 5 9 '
+output: html_document
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+This is course project for coursera reproducible repsearch. This is an analysis for step data collected by activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up.
+
+## Loading and preprocessing the data
+This is step data collected by device. It is 5 minute interval through day. Date of step data is transferred to "date" object. 
+```{r}
+library(zoo)
+library(TSstudio)
+library(dplyr)
+step_data<-read.csv("activity.csv")
+step_data$date<-as.Date(step_data$date)
+head(step_data)
+setwd("C:/Users/cyj90/github/study/reproducible_research/course_project1")
+```
+
+## Mean total number of steps taken per day
+Total number of steps taken per day is formulated as code below.Total number of step each day table below. 
+```{r}
+by_date<-step_data%>%
+  group_by(date)%>%
+  summarise(
+  mean=mean(steps,na.rm=TRUE),
+  median=median(steps,na.rm=TRUE),
+  sum=sum(steps))
+head(by_date)
+```
+
+Histogram of total number of steps taken each day is figure below. Ths most frequent section is from 10,000 to 15,000. 
+```{r}
+hist(by_date$sum)
+```
+Mean and median of the total number of steps taken per day is calculated as below.Na value is stripped. Mean and median value is around 10765 steps. 
+```{r}
+  mean(by_date$sum,na.rm=TRUE)
+  median(by_date$sum,na.rm=TRUE)
+```
+
+## Average daily activity pattern
+Mean and median number of steps taken each day is table below. 
+
+```{r}
+by_interval<-step_data %>%
+  group_by(interval)%>%
+  summarise(
+  mean=mean(steps,na.rm=TRUE))
+by_interval
+```
+Figure below is teime series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis). 
+```{r}
+plot(x=by_interval$interval,y=by_interval$mean,type="l")
+```
+
+Among 5-minute interval on average across all the days, 835 steps contains maximum number
+```{r}
+  head(arrange(by_interval,desc(mean)))
+```
+
+##Imputing missing values
+Among step data, 2304 data is na value. 
+```{r}
+str(filter(step_data,is.na(steps)==TRUE))
+```
+
+Step data is imputed with ImputeTS package. Time series plot of step data is figure below.
+```{r}
+  library(imputeTS)
+  step_data_imputed<-step_data
+  step_data_imputed$steps<-na_interpolation(step_data_imputed$steps)
+  plot(x=step_data_imputed$date,step_data_imputed$steps,type="l")
+```
+
+```{r}
+by_date_imputed<-step_data_imputed %>%
+  group_by(date)%>%
+  summarise(
+  mean=mean(steps,na.rm=TRUE),
+  median=median(steps,na.rm=TRUE),
+  sum=sum(steps))
+head(by_date_imputed)
+```
+
+Mean and median of the total number of steps taken per day with imputation is calculated below. The value is quite different comparing to value without impuation whose mean is 10766.19 and median is 10765.
+```{r}
+mean(by_date_imputed$sum)
+median(by_date_imputed$sum)
+```
+
+##Differences in activity patterns between weekdays and weekends
+Step data is arranged by weekend and weekdays. Step data of weekdays is table below.  
+```{r}
+step_data_imputed$weekdays<-weekdays.Date(step_data_imputed$date)
+  step_data_imputed_weekday<-filter(step_data_imputed,weekdays=="월요일" | weekdays=="화요일" | weekdays=="수요일"  | weekdays=="목요일"  | weekdays=="금요일")
+  step_data_imputed_weekend<-filter(step_data_imputed,weekdays=="토요일" | weekdays=="일요일")
+  head(step_data_imputed_weekday)
+```
+Step data of weekend is table below.
+```{r}
+head(step_data_imputed_weekend)
+```
+Step data is factored to weekdays and weekend.
+```{r}
+weekdays1<-c('월요일', '화요일', '수요일', '목요일', '금요일')
+weekend1<-c('월요일', '화요일', '수요일', '목요일', '금요일')
+step_data_imputed$ifweekday<-factor(step_data_imputed$weekdays %in% weekdays1,levels=c(FALSE, TRUE), labels=c('weekend', 'weekday'))
+head(step_data_imputed)
+```
+```{r}
+  step_data_imputed_weekday<-filter(step_data_imputed,ifweekday == "weekday")
+  step_data_imputed_weekend<-filter(step_data_imputed,ifweekday == "weekend")
+```
+
+Time series plot of the 5-minute interval (x-axis) and the average number of steps taken (y-axis)  in weekdays is figure below.
+```{r}
+by_interval_imputed_weekday<-step_data_imputed_weekday %>%
+  group_by(interval)%>%
+  summarise(
+  mean=mean(steps,na.rm=TRUE))
+
+by_interval_imputed_weekend<-step_data_imputed_weekend %>%
+  group_by(interval)%>%
+  summarise(
+  mean=mean(steps,na.rm=TRUE))
+
+
+plot(x=by_interval_imputed_weekday$interval,y=by_interval_imputed_weekday$mean,type="l")
+```
+
+Time series plot of the 5-minute interval (x-axis) and the average number of steps taken (y-axis)  in weekend is figure below.
+```{r}
+plot(x=by_interval_imputed_weekend$interval,y=by_interval_imputed_weekend$mean,type="l")
+```
+

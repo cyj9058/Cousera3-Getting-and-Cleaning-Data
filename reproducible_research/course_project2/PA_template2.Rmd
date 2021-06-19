@@ -1,0 +1,150 @@
+---
+title: "Analysis of NOAA Storm Data: respect to population health & economic consequences "
+author: "Young Ji Cho"
+date: '2021 5 17 '
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+```
+
+# Introduction 
+This report analyze "NOAA Storm Database", which is collected from 1950 to 2011. The original data is collected by the National weather service and there are various sources: county,state, newspaper, inusurance industry, etc
+
+This report will process and infer some results for two questions 
+1. Which types of events are most harmful with respect to population health?
+2. Which types of events have the greatest economic consequences?
+
+# Data Processing
+## Read.CSV and System setting 
+Original data file is loaded to storm_data dataframe with read.csv function. If system setting is not "English" The error might be caused: Only 692,288 objects are processed throughout 902,297 objects. 
+```{r, cache=TRUE}
+Sys.setlocale(category = "LC_ALL", locale = "Korean")
+setwd("C:/Users/cyj90/github/study/reproducible_research/course_project2")
+storm_data<-read.csv(file="repdata_data_StormData.csv",header=TRUE)
+dim(storm_data)
+```
+If system setting is "English", data is processed properly with 902297 objects. 
+```{r, cache=TRUE}
+Sys.setlocale(category = "LC_ALL", locale = "English")
+setwd("C:/Users/cyj90/github/study/reproducible_research/course_project2")
+storm_data<-read.csv(file="repdata_data_StormData.csv",header=TRUE)
+dim(storm_data)
+```
+## Crucial Variables
+Storm Data is consists of  with 37 variables. The crucial variables shall be derived for efficient analysis. The crucial variables for public health and economic consequences are below. 
+
+- BGN_DATE: Time when the event begun.  
+- EVTYPE: The most crucial variable in the analysis, this variables designate which events are occurred: such as Tornado, Hail, etc. 
+- FATALITIES: Fatalities occurred by event. 
+- INJURIES: Injuries occurred by event.
+- PROPDMG: Property damage occurred by event.
+- PROPDMGEXP: Property damage estimates occurred by event. According to "NATIONAL WEATHER SERVICE INSTRUCTION", Estimates are followed by an alphabetical character signifying the magnitude of the number. 
+ EX) “K” for thousands, “M” for millions, and “B” for billions.
+- CPROPDMG: Crop property damage occurred by event. 
+- CPROPDMGEXP: Crop property damage occurred by event. Estimates caculated same way as "PROPDMGEXP". 
+- REFNUM: Unique event number for each event. 
+
+First of all, event type variables shall be converted to factor.There are 985 types of event type in the storm data.
+```{r, cache=TRUE}
+storm_data1<-storm_data
+storm_data1$EVTYPE<-as.factor(storm_data1$EVTYPE)
+length(levels(storm_data1$EVTYPE))
+levels(storm_data1$EVTYPE)[0:29]
+```
+Second, alphabet charactor of estimates shall be converted as numeral value.CPROPDMGEXP value does not have an estimates. Only property damage has a estimate value. Therefore, it is important to covert all aphabet estimate to numeral value using regular expression. 
+- H/h: hundred dollars
+- K/k: Thousand dollars
+- M/m: Million dollars
+- B: Billions dollars 
+
+```{r, cache=TRUE}
+levels(factor(storm_data1$PROPDMGEXP))
+levels(factor(storm_data1$CPROPDMGEXP))
+```
+```{r, cache=TRUE}
+storm_data1$PROPDMGEXP[grep("H",storm_data1$PROPDMGEXP)]<-gsub("H",100,storm_data1$PROPDMGEXP[grep("H",storm_data1$PROPDMGEXP)])
+storm_data1$PROPDMGEXP[grep("h",storm_data1$PROPDMGEXP)]<-gsub("h",100,storm_data1$PROPDMGEXP[grep("h",storm_data1$PROPDMGEXP)])
+storm_data1$PROPDMGEXP[grep("K",storm_data1$PROPDMGEXP)]<-gsub("K",1000,storm_data1$PROPDMGEXP[grep("K",storm_data1$PROPDMGEXP)])
+storm_data1$PROPDMGEXP[grep("k",storm_data1$PROPDMGEXP)]<-gsub("k",1000,storm_data1$PROPDMGEXP[grep("k",storm_data1$PROPDMGEXP)])
+storm_data1$PROPDMGEXP[grep("M",storm_data1$PROPDMGEXP)]<-gsub("M",1000000,storm_data1$PROPDMGEXP[grep("M",storm_data1$PROPDMGEXP)])
+storm_data1$PROPDMGEXP[grep("m",storm_data1$PROPDMGEXP)]<-gsub("m",1000000,storm_data1$PROPDMGEXP[grep("m",storm_data1$PROPDMGEXP)])
+storm_data1$PROPDMGEXP[grep("B",storm_data1$PROPDMGEXP)]<-gsub("B",1000000000,storm_data1$PROPDMGEXP[grep("B",storm_data1$PROPDMGEXP)])
+
+
+storm_data1$CROPDMGEXP[grep("K",storm_data1$CROPDMGEXP)]<-gsub("K",1000,storm_data1$CROPDMGEXP[grep("K",storm_data1$CROPDMGEXP)])
+storm_data1$CROPDMGEXP[grep("k",storm_data1$CROPDMGEXP)]<-gsub("k",1000,storm_data1$CROPDMGEXP[grep("k",storm_data1$CROPDMGEXP)])
+storm_data1$CROPDMGEXP[grep("M",storm_data1$CROPDMGEXP)]<-gsub("M",1000000,storm_data1$CROPDMGEXP[grep("M",storm_data1$CROPDMGEXP)])
+storm_data1$CROPDMGEXP[grep("m",storm_data1$CROPDMGEXP)]<-gsub("m",1000000,storm_data1$CROPDMGEXP[grep("m",storm_data1$CROPDMGEXP)])
+storm_data1$CROPDMGEXP[grep("B",storm_data1$PROPDMGEXP)]<-gsub("B",1000000000,storm_data1$CROPDMGEXP[grep("B",storm_data1$CROPDMGEXP)])
+
+storm_data1$PROPDMGEXP<-as.numeric(storm_data1$PROPDMGEXP)
+storm_data1$CROPDMGEXP<-as.numeric(storm_data1$CROPDMGEXP)
+levels(factor(storm_data1$PROPDMGEXP))
+levels(factor(storm_data1$CROPDMGEXP))
+
+storm_data1$PROPDMGEXP[is.na(storm_data1$PROPDMGEXP)]<-0
+storm_data1$CROPDMGEXP[is.na(storm_data1$CROPDMGEXP)]<-0
+```
+
+# Result
+## Event & population health
+According to result, the most harmful event which occurr fatalities and injuries most is TORNADO. However, the second harmful event is different from fatalities and injuries.In respect to fatalities, excessive heat is the second most harmful event. In respect to injuries, TSTM Wind is the second most harmful event.
+
+```{r, cache=TRUE}
+by_FATALITIES<-storm_data1%>%
+  group_by(EVTYPE)%>%
+  summarise(
+  mean=mean(FATALITIES,na.rm=TRUE),
+  median=median(FATALITIES,na.rm=TRUE),
+  sum=sum(FATALITIES))
+
+by_INJURIES<-storm_data1%>%
+  group_by(EVTYPE)%>%
+  summarise(
+  mean=mean(INJURIES,na.rm=TRUE),
+  median=median(INJURIES,na.rm=TRUE),
+  sum=sum(INJURIES))
+
+by_FATALITIES<-head(arrange(by_FATALITIES,desc(sum)))
+by_INJURIES<-head(arrange(by_INJURIES,desc(sum)))
+
+by_FATALITIES
+by_INJURIES
+```
+
+```{r, cache=TRUE}
+ggplot(by_FATALITIES, aes(x=EVTYPE, y=sum))+geom_bar(stat='identity')
+ggplot(by_INJURIES, aes(x=EVTYPE, y=sum))+geom_bar(stat='identity')
+```
+
+## Event & economical consequenses 
+In respect to economical consequenses, Flood is the most harmful event, HURRICANE/TYPHOON is second, and the third is TOrNADO. 
+
+```{r, cache=TRUE}
+storm_data2<-storm_data1
+storm_data2$PROPDMG_total<-storm_data2$PROPDMG*storm_data2$PROPDMGEXP
+storm_data2$CROPDMG_total<-storm_data2$CROPDMG*storm_data2$CROPDMGEXP
+storm_data2$TOTAL_DAMAGE<-storm_data2$PROPDMG_total+storm_data2$CROPDMG_total
+```
+
+```{r, cache=TRUE}
+by_TOTAL_DAMAGE<-storm_data2%>%
+  group_by(EVTYPE)%>%
+  summarise(
+  mean=mean(TOTAL_DAMAGE,na.rm=TRUE),
+  median=median(TOTAL_DAMAGE,na.rm=TRUE),
+  sum=sum(TOTAL_DAMAGE))
+
+by_TOTAL_DAMAGE<-head(arrange(by_TOTAL_DAMAGE,desc(sum)))
+by_TOTAL_DAMAGE
+```
+
+
+```{r, cache=TRUE}
+ggplot(by_TOTAL_DAMAGE, aes(x=EVTYPE, y=sum))+geom_bar(stat='identity')
+```
+# Conclusion
+In respect to public health, most harmful event is TORNADO, but TORNADO is third the most harmful event in respect to economical consequences,In respect to economical consequences, Flood is the most harmful event.
