@@ -39,6 +39,7 @@ names(Baltimore_data)<-c("year","type","Emissions")
 
 ggplot(data=Baltimore_data,aes(x=year,y=Emissions,group=type,color=type))+
   geom_line()+
+  geom_point()+
   ggtitle("Total Emission by Type in Batimore City")
 
 #Making File
